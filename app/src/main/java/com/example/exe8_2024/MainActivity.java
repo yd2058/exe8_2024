@@ -76,12 +76,11 @@ public class MainActivity extends AppCompatActivity implements View.OnCreateCont
 
     public void write(boolean res){
         try{
-            String prev = read();
             FileOutputStream fOS = openFileOutput(FILENAME,MODE_PRIVATE);
             OutputStreamWriter oSW = new OutputStreamWriter(fOS);
             BufferedWriter bW = new BufferedWriter(oSW);
             if (res){bW.write("");}
-            else{bW.write(prev+" "+et.getText().toString());}
+            else{bW.write(tvt.getText()+" "+et.getText().toString());}
             bW.close();
             oSW.close();
             fOS.close();
