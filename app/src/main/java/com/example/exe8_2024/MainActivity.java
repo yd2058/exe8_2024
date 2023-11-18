@@ -1,7 +1,7 @@
 package com.example.exe8_2024;
 /**
  * @author		Yiftah David yd2058@bs.amalnet.k12.il
- * @version	    1.1
+ * @version	    1.2
  * @since		13/11/2023
  * this program uses internal files in order to save a string and display it later
  */
@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -26,7 +27,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 
 public class MainActivity extends AppCompatActivity implements View.OnCreateContextMenuListener {
-    int count = 0;
     TextView tvt;
     EditText et;
     private final String FILENAME = "bnk.txt";
@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity implements View.OnCreateCont
         setContentView(R.layout.activity_main);
         tvt = findViewById(R.id.tvc);
         et = findViewById(R.id.et);
-        read();
+        tvt.setText(read());
     }
     /**
      * creates the context menu.
@@ -69,18 +69,19 @@ public class MainActivity extends AppCompatActivity implements View.OnCreateCont
         return true;
     }
     /**
-     * saves the counter and the string to the shared preferences file.
+     * writes to file.
      * <p>
-     *
+     * @param res   indicates if the write is in order to reset the file or not.
      */
 
     public void write(boolean res){
         try{
+            String prev = read();
             FileOutputStream fOS = openFileOutput(FILENAME,MODE_PRIVATE);
             OutputStreamWriter oSW = new OutputStreamWriter(fOS);
             BufferedWriter bW = new BufferedWriter(oSW);
-            if (!res){bW.write(read()+et.getText().toString());}
-            else{bW.write("");}
+            if (res){bW.write("");}
+            else{bW.write(prev+" "+et.getText().toString());}
             bW.close();
             oSW.close();
             fOS.close();
@@ -90,7 +91,7 @@ public class MainActivity extends AppCompatActivity implements View.OnCreateCont
         }
     }
     /**
-     * reacts to a counter add button press and increments the counter.
+     * reacts to a text save button and executes save, and update the textview
      * <p>
      *
      * @param	view Description	refers to the current activity.
@@ -101,7 +102,7 @@ public class MainActivity extends AppCompatActivity implements View.OnCreateCont
         tvt.setText(read());
     }
     /**
-     * reacts to a counter reset button press and resets the counter.
+     * resets the file
      * <p>
      *
      * @param	view Description	refers to the current activity.
@@ -112,7 +113,7 @@ public class MainActivity extends AppCompatActivity implements View.OnCreateCont
         tvt.setText("");
     }
     /**
-     * activates the save function and closes the app.
+     * closes the app.
      * <p>
      *
      * @param	view Description	refers to the current activity.
@@ -122,7 +123,7 @@ public class MainActivity extends AppCompatActivity implements View.OnCreateCont
         finish();
     }
     /**
-     * when the app starts the function will read the shared preferences file and fill the relevant field.
+     * read from the file.
      * <p>
      *
      */
@@ -134,7 +135,7 @@ public class MainActivity extends AppCompatActivity implements View.OnCreateCont
             StringBuilder sB = new StringBuilder();
             String line = bR.readLine();
             while (line != null) {
-                sB.append(line+'\n');
+                sB.append(line);
                 line = bR.readLine();
             }
             bR.close();
