@@ -16,18 +16,27 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 
 public class MainActivity extends AppCompatActivity implements View.OnCreateContextMenuListener {
     int count = 0;
-    TextView tvc;
+    TextView tvt;
     EditText et;
+    private final String FILENAME = "bnk.txt";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        tvc = findViewById(R.id.tvc);
+        tvt = findViewById(R.id.tvc);
         et = findViewById(R.id.et);
-        strt();
+        read();
     }
     /**
      * creates the context menu.
@@ -53,7 +62,7 @@ public class MainActivity extends AppCompatActivity implements View.OnCreateCont
     public boolean onOptionsItemSelected(MenuItem item){
         int id = item.getItemId();
         if(id == R.id.btnc){
-            save();
+            write(false);
             Intent si = new Intent(this,credits.class);
             startActivity(si);
         }
@@ -65,12 +74,20 @@ public class MainActivity extends AppCompatActivity implements View.OnCreateCont
      *
      */
 
-    public void save(){
-        SharedPreferences settings = getSharedPreferences("PREFS_NAME",MODE_PRIVATE);
-        SharedPreferences.Editor editor = settings.edit();
-        editor.putInt("Counter",count);
-        editor.putString("String",et.getText().toString());
-        editor.commit();
+    public void write(boolean res){
+        try{
+            FileOutputStream fOS = openFileOutput(FILENAME,MODE_PRIVATE);
+            OutputStreamWriter oSW = new OutputStreamWriter(fOS);
+            BufferedWriter bW = new BufferedWriter(oSW);
+            if (!res){bW.write(read()+et.getText().toString());}
+            else{bW.write("");}
+            bW.close();
+            oSW.close();
+            fOS.close();
+        }
+        catch(Exception e){
+            Toast.makeText(this, "Something went wrong \n Please try again", Toast.LENGTH_SHORT).show();
+        }
     }
     /**
      * reacts to a counter add button press and increments the counter.
@@ -79,9 +96,9 @@ public class MainActivity extends AppCompatActivity implements View.OnCreateCont
      * @param	view Description	refers to the current activity.
      */
 
-    public void add(View view) {
-        count++;
-        tvc.setText(count+"");
+    public void saver(View view) {
+        write(false);
+        tvt.setText(read());
     }
     /**
      * reacts to a counter reset button press and resets the counter.
@@ -91,8 +108,8 @@ public class MainActivity extends AppCompatActivity implements View.OnCreateCont
      */
 
     public void res(View view) {
-        count = 0;
-        tvc.setText(count+"");
+        write(true);
+        tvt.setText("");
     }
     /**
      * activates the save function and closes the app.
@@ -102,7 +119,6 @@ public class MainActivity extends AppCompatActivity implements View.OnCreateCont
      */
 
     public void out(View view) {
-        save();
         finish();
     }
     /**
@@ -110,10 +126,25 @@ public class MainActivity extends AppCompatActivity implements View.OnCreateCont
      * <p>
      *
      */
-    public void strt(){
-        SharedPreferences settings = getSharedPreferences("PREFS_NAME",MODE_PRIVATE);
-        tvc.setText(settings.getInt("Counter",0)+"");
-        et.setHint(settings.getString("String","Enter Text"));
+    public String read(){
+        try{
+            FileInputStream fIS= openFileInput(FILENAME);
+            InputStreamReader iSR = new InputStreamReader(fIS);
+            BufferedReader bR = new BufferedReader(iSR);
+            StringBuilder sB = new StringBuilder();
+            String line = bR.readLine();
+            while (line != null) {
+                sB.append(line+'\n');
+                line = bR.readLine();
+            }
+            bR.close();
+            iSR.close();
+            fIS.close();
+            return sB.toString();}
+        catch(Exception e){
+            Toast.makeText(this, "Something went wrong \n Please try again", Toast.LENGTH_SHORT).show();
+            return null;
+        }
     }
 
 }

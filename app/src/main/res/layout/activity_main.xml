@@ -49,12 +49,12 @@
             android:layout_weight="1" />
 
         <Button
-            android:id="@+id/cbtn"
+            android:id="@+id/sbtn"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:text="Count"
-            android:onClick="add"/>
+            android:onClick="saver"
+            android:text="save" />
 
         <Space
             android:layout_width="wrap_content"
